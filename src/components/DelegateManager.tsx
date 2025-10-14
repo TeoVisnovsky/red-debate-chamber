@@ -6,8 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, X, Star, Users } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
-export const DelegateManager = () => {
-  const [delegates, setDelegates] = useState<string[]>([]);
+interface DelegateManagerProps {
+  delegates: string[];
+  setDelegates: (delegates: string[]) => void;
+}
+
+export const DelegateManager = ({ delegates, setDelegates }: DelegateManagerProps) => {
   const [newDelegate, setNewDelegate] = useState("");
 
   const addDelegate = () => {

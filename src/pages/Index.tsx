@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { Timer } from "@/components/Timer";
 import { DelegateManager } from "@/components/DelegateManager";
 import { DiscussionModes } from "@/components/DiscussionModes";
 import { Star } from "lucide-react";
 
 const Index = () => {
+  const [delegates, setDelegates] = useState<string[]>([]);
+
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       {/* Header */}
@@ -27,12 +30,12 @@ const Index = () => {
         {/* Left Column - Timer and Modes */}
         <div className="lg:col-span-1 space-y-6">
           <Timer />
-          <DiscussionModes />
+          <DiscussionModes delegates={delegates} />
         </div>
 
         {/* Right Column - Delegates */}
         <div className="lg:col-span-2">
-          <DelegateManager />
+          <DelegateManager delegates={delegates} setDelegates={setDelegates} />
         </div>
       </div>
 

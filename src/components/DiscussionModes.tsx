@@ -3,10 +3,18 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, MessageSquare, Users2, Vote, ListOrdered } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ModeratedCaucus } from "./ModeratedCaucus";
+import { UnmoderatedCaucus } from "./UnmoderatedCaucus";
+import { VotingProcedure } from "./VotingProcedure";
+import { GeneralSpeakersList } from "./GeneralSpeakersList";
 
 type DiscussionMode = "gsl" | "moderated" | "unmoderated" | "voting" | null;
 
-export const DiscussionModes = () => {
+interface DiscussionModesProps {
+  delegates: string[];
+}
+
+export const DiscussionModes = ({ delegates }: DiscussionModesProps) => {
   const [activeMode, setActiveMode] = useState<DiscussionMode>(null);
 
   const modes = [
@@ -90,6 +98,12 @@ export const DiscussionModes = () => {
           End Current Mode
         </Button>
       )}
+
+      {/* Mode-specific Components */}
+      {activeMode === "gsl" && <GeneralSpeakersList delegates={delegates} />}
+      {activeMode === "moderated" && <ModeratedCaucus delegates={delegates} />}
+      {activeMode === "unmoderated" && <UnmoderatedCaucus />}
+      {activeMode === "voting" && <VotingProcedure delegates={delegates} />}
     </Card>
   );
 };
