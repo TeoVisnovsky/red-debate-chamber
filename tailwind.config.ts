@@ -70,9 +70,9 @@ export default {
         'soviet': 'var(--shadow-soviet)',
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "0rem",
+        md: "0rem",
+        sm: "0rem",
       },
       keyframes: {
         "accordion-down": {
