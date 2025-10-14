@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ArrowUp, ArrowDown, X, UserPlus, GripVertical, Clock } from "lucide-react";
+import { ArrowUp, ArrowDown, X, UserPlus, GripVertical, Clock, Play } from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -32,7 +32,7 @@ interface GeneralSpeakersListProps {
 interface SpeakerEntry {
   id: string;
   name: string;
-  time: number; // in seconds
+  time: number;
 }
 
 interface SortableItemProps {
@@ -62,36 +62,38 @@ const SortableItem = ({ speaker, index, onRemove, onTimeChange }: SortableItemPr
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center justify-between p-3 bg-muted rounded border border-border hover:border-primary transition-colors"
+      className="group flex items-center justify-between p-4 bg-eu-muted/30 rounded-xl border border-eu-primary/20 hover:border-eu-primary/50 hover:bg-eu-muted/50 transition-all"
     >
-      <div className="flex items-center gap-2 flex-1">
+      <div className="flex items-center gap-3 flex-1">
         <div
           {...attributes}
           {...listeners}
           className="cursor-grab active:cursor-grabbing touch-none"
         >
-          <GripVertical className="w-4 h-4 text-muted-foreground" />
+          <GripVertical className="w-4 h-4 text-eu-muted-foreground hover:text-eu-primary transition-colors" />
         </div>
-        <Badge variant="outline">{index + 2}</Badge>
-        <span className="font-medium flex-1">{speaker.name}</span>
+        <div className="w-8 h-8 rounded-lg bg-gradient-eu flex items-center justify-center text-white text-sm font-bold shadow-sm">
+          {index + 2}
+        </div>
+        <span className="font-semibold text-eu-foreground flex-1">{speaker.name}</span>
         <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-muted-foreground" />
+          <Clock className="w-4 h-4 text-eu-primary" />
           <Input
             type="number"
             min="0"
             value={speaker.time}
             onChange={(e) => onTimeChange(speaker.id, parseInt(e.target.value) || 0)}
-            className="w-20 h-8 text-center"
+            className="w-20 h-9 text-center bg-eu-muted/50 border-eu-primary/30 text-eu-foreground rounded-lg"
             onClick={(e) => e.stopPropagation()}
           />
-          <span className="text-sm text-muted-foreground">sec</span>
+          <span className="text-sm text-eu-muted-foreground">sec</span>
         </div>
       </div>
       <Button
         onClick={() => onRemove(speaker.id)}
         variant="ghost"
         size="sm"
-        className="h-8 w-8 p-0 ml-2"
+        className="h-8 w-8 p-0 ml-2 hover:bg-blue-500/20 text-eu-muted-foreground hover:text-blue-400 rounded-lg transition-all opacity-0 group-hover:opacity-100"
       >
         <X className="w-4 h-4" />
       </Button>
@@ -99,7 +101,7 @@ const SortableItem = ({ speaker, index, onRemove, onTimeChange }: SortableItemPr
   );
 };
 
-export const GeneralSpeakersList = ({ delegates, onSetTimer }: GeneralSpeakersListProps) => {
+export const EUGeneralSpeakersList = ({ delegates, onSetTimer }: GeneralSpeakersListProps) => {
   const [speakerQueue, setSpeakerQueue] = useState<SpeakerEntry[]>([]);
   const [selectedDelegate, setSelectedDelegate] = useState("");
   const [defaultSpeakerTime, setDefaultSpeakerTime] = useState(60);
@@ -141,7 +143,6 @@ export const GeneralSpeakersList = ({ delegates, onSetTimer }: GeneralSpeakersLi
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over.id);
 
-        // Don't allow dragging before the current speaker
         if (newIndex === 0) return items;
 
         return arrayMove(items, oldIndex, newIndex);
@@ -154,58 +155,68 @@ export const GeneralSpeakersList = ({ delegates, onSetTimer }: GeneralSpeakersLi
   };
 
   return (
-    <Card className="bg-card border-2 border-primary p-6 mt-4">
-      <h3 className="text-xl font-bold text-primary mb-4">GENERAL SPEAKERS LIST</h3>
+    <Card className="bg-eu-card/50 backdrop-blur-md border border-eu-primary/30 rounded-2xl p-6 mt-4 shadow-lg">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 rounded-full bg-gradient-eu flex items-center justify-center shadow-eu">
+          <UserPlus className="w-5 h-5 text-white" />
+        </div>
+        <h3 className="text-2xl font-bold bg-gradient-to-r from-eu-primary to-blue-400 bg-clip-text text-transparent">
+          GENERAL SPEAKERS LIST
+        </h3>
+      </div>
 
       {speakerQueue.length > 0 && (
-        <div className="mb-4 p-4 bg-gradient-soviet rounded border-2 border-secondary">
-          <Badge className="mb-2 bg-secondary text-secondary-foreground">CURRENT SPEAKER</Badge>
-          <div className="flex items-center justify-between text-primary-foreground mb-2">
-            <p className="font-bold text-lg">{speakerQueue[0].name}</p>
-            <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1 rounded">
-              <Clock className="w-4 h-4" />
-              <span className="font-bold">{speakerQueue[0].time}s</span>
+        <div className="mb-6 p-6 bg-gradient-eu rounded-2xl shadow-eu relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent" />
+          <div className="relative">
+            <Badge className="mb-3 bg-eu-accent text-eu-accent-foreground font-bold px-4 py-1 rounded-lg shadow-eu-gold">
+              CURRENT SPEAKER
+            </Badge>
+            <div className="flex items-center justify-between text-white mb-4">
+              <p className="font-bold text-2xl">{speakerQueue[0].name}</p>
+              <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-xl">
+                <Clock className="w-5 h-5" />
+                <span className="font-bold text-lg">{speakerQueue[0].time}s</span>
+              </div>
             </div>
-          </div>
-          <div className="flex gap-2 mt-2">
-            <Button 
-              onClick={nextSpeaker} 
-              variant="secondary" 
-              className="flex-1"
-            >
-              Next Speaker
-            </Button>
-            {onSetTimer && (
-              <Button
-                onClick={() => onSetTimer(speakerQueue[0].time, true)}
-                variant="outline"
-                className="flex-1 border-secondary text-primary-foreground hover:bg-secondary/20"
+            <div className="flex gap-2">
+              <Button 
+                onClick={nextSpeaker} 
+                className="flex-1 bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border border-white/30 rounded-xl font-semibold"
               >
-                <Clock className="w-4 h-4 mr-2" />
-                Start Timer
+                Next Speaker
               </Button>
-            )}
+              {onSetTimer && (
+                <Button
+                  onClick={() => onSetTimer(speakerQueue[0].time, true)}
+                  className="flex-1 bg-eu-accent hover:opacity-90 text-eu-accent-foreground rounded-xl font-semibold shadow-eu-gold"
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Start Timer
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       )}
 
-      <div className="mb-4 p-3 bg-muted rounded border border-border">
-        <Label className="text-sm font-bold mb-2 block">Default Speaker Time</Label>
+      <div className="mb-4 p-4 bg-eu-muted/30 rounded-xl border border-eu-primary/20">
+        <Label className="text-sm font-semibold mb-2 block text-eu-foreground">Default Speaker Time</Label>
         <div className="flex items-center gap-2">
           <Input
             type="number"
             min="0"
             value={defaultSpeakerTime}
             onChange={(e) => setDefaultSpeakerTime(parseInt(e.target.value) || 60)}
-            className="flex-1"
+            className="flex-1 bg-eu-muted/50 border-eu-primary/30 text-eu-foreground rounded-xl"
           />
-          <span className="text-sm text-muted-foreground">seconds</span>
+          <span className="text-sm text-eu-muted-foreground font-medium">seconds</span>
         </div>
       </div>
 
       <div className="flex gap-2 mb-4">
         <Select value={selectedDelegate} onValueChange={setSelectedDelegate}>
-          <SelectTrigger className="bg-input border-primary">
+          <SelectTrigger className="bg-eu-muted/50 border-eu-primary/30 text-eu-foreground rounded-xl">
             <SelectValue placeholder="Select delegate..." />
           </SelectTrigger>
           <SelectContent>
@@ -218,8 +229,12 @@ export const GeneralSpeakersList = ({ delegates, onSetTimer }: GeneralSpeakersLi
               ))}
           </SelectContent>
         </Select>
-        <Button onClick={addSpeaker} size="icon" variant="secondary">
-          <UserPlus className="w-4 h-4" />
+        <Button 
+          onClick={addSpeaker} 
+          size="icon" 
+          className="bg-gradient-eu-gold hover:opacity-90 text-eu-accent-foreground rounded-xl shadow-eu-gold w-12 h-12"
+        >
+          <UserPlus className="w-5 h-5" />
         </Button>
       </div>
 
@@ -228,7 +243,7 @@ export const GeneralSpeakersList = ({ delegates, onSetTimer }: GeneralSpeakersLi
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <div className="space-y-2 max-h-64 overflow-y-auto">
+        <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
           <SortableContext
             items={speakerQueue.slice(1).map(s => s.id)}
             strategy={verticalListSortingStrategy}
@@ -247,9 +262,14 @@ export const GeneralSpeakersList = ({ delegates, onSetTimer }: GeneralSpeakersLi
       </DndContext>
 
       {speakerQueue.length === 0 && (
-        <p className="text-muted-foreground text-center py-8">
-          No speakers in queue. Add comrades to begin.
-        </p>
+        <div className="text-center py-12">
+          <div className="w-16 h-16 rounded-full bg-eu-muted/50 flex items-center justify-center mx-auto mb-4">
+            <UserPlus className="w-8 h-8 text-eu-primary/50" />
+          </div>
+          <p className="text-eu-muted-foreground text-sm">
+            No speakers in queue. Add delegates to begin.
+          </p>
+        </div>
       )}
     </Card>
   );

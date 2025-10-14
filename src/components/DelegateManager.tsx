@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, X, Star, Users } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Plus, X, Star, Users, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface DelegateManagerProps {
@@ -13,6 +14,7 @@ interface DelegateManagerProps {
 
 export const DelegateManager = ({ delegates, setDelegates }: DelegateManagerProps) => {
   const [newDelegate, setNewDelegate] = useState("");
+  const [isOpen, setIsOpen] = useState(true);
 
   const addDelegate = () => {
     if (newDelegate.trim() && !delegates.includes(newDelegate.trim())) {
@@ -35,17 +37,29 @@ export const DelegateManager = ({ delegates, setDelegates }: DelegateManagerProp
   };
 
   return (
-    <Card className="bg-card border-2 border-primary p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <Star className="w-5 h-5 text-secondary fill-secondary" />
-        <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
-          <Users className="w-6 h-6" />
-          DELEGATES
-        </h2>
-        <Star className="w-5 h-5 text-secondary fill-secondary" />
-      </div>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <Card className="bg-card border-2 border-primary p-6">
+        <CollapsibleTrigger asChild>
+          <div className="flex items-center gap-2 mb-4 cursor-pointer hover:opacity-80 transition-opacity">
+            <Star className="w-5 h-5 text-secondary fill-secondary" />
+            <h2 className="text-2xl font-bold text-primary flex items-center gap-2 flex-1">
+              <Users className="w-6 h-6" />
+              DELEGATES
+            </h2>
+            <Badge variant="secondary" className="text-sm">
+              {delegates.length}
+            </Badge>
+            {isOpen ? (
+              <ChevronUp className="w-5 h-5 text-primary" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-primary" />
+            )}
+            <Star className="w-5 h-5 text-secondary fill-secondary" />
+          </div>
+        </CollapsibleTrigger>
 
-      <div className="flex gap-2 mb-4">
+        <CollapsibleContent>
+          <div className="flex gap-2 mb-4">
         <Input
           placeholder="Add delegate/country..."
           value={newDelegate}
@@ -83,13 +97,15 @@ export const DelegateManager = ({ delegates, setDelegates }: DelegateManagerProp
         )}
       </div>
 
-      {delegates.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-border">
-          <Badge variant="secondary" className="text-sm">
-            Total: {delegates.length} delegates
-          </Badge>
-        </div>
-      )}
-    </Card>
+          {delegates.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-border">
+              <Badge variant="secondary" className="text-sm">
+                Total: {delegates.length} delegates
+              </Badge>
+            </div>
+          )}
+        </CollapsibleContent>
+      </Card>
+    </Collapsible>
   );
 };

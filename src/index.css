@@ -43,6 +43,34 @@ All colors MUST be HSL.
     --shadow-soviet: 0 10px 40px -10px hsl(348 83% 47% / 0.4);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
+    /* EU Theme Colors - Modern & Sleek */
+    --eu-background: 220 30% 8%;
+    --eu-foreground: 210 100% 98%;
+    --eu-card: 220 25% 12%;
+    --eu-card-foreground: 210 100% 98%;
+    --eu-primary: 214 100% 50%;
+    --eu-primary-foreground: 0 0% 100%;
+    --eu-secondary: 48 100% 50%;
+    --eu-secondary-foreground: 220 30% 8%;
+    --eu-accent: 48 100% 50%;
+    --eu-accent-foreground: 220 30% 8%;
+    --eu-muted: 220 20% 15%;
+    --eu-muted-foreground: 215 20% 60%;
+    --eu-border: 214 100% 50% / 0.2;
+    --eu-glow: 214 100% 50% / 0.5;
+    --gradient-eu: linear-gradient(135deg, hsl(214 100% 50%) 0%, hsl(220 100% 40%) 50%, hsl(214 100% 30%) 100%);
+    --gradient-eu-gold: linear-gradient(135deg, hsl(48 100% 50%) 0%, hsl(45 100% 45%) 100%);
+    --shadow-eu: 0 20px 60px -10px hsl(214 100% 50% / 0.5);
+    --shadow-eu-gold: 0 10px 40px -10px hsl(48 100% 50% / 0.4);
+
+    /* NATO Theme Colors (for future) */
+    --nato-background: 210 15% 12%;
+    --nato-foreground: 210 20% 95%;
+    --nato-primary: 210 50% 45%;
+    --nato-secondary: 0 0% 70%;
+    --nato-accent: 210 80% 60%;
+    --gradient-nato: linear-gradient(135deg, hsl(210 50% 45%) 0%, hsl(210 40% 30%) 100%);
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -117,6 +145,25 @@ All colors MUST be HSL.
     inset: -6px;
     border: 2px solid hsl(var(--secondary));
     pointer-events: none;
+  }
+
+  /* EU Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: hsl(var(--eu-muted));
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, hsl(var(--eu-primary)) 0%, hsl(220 100% 40%) 100%);
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, hsl(var(--eu-primary)) 0%, hsl(var(--eu-accent)) 100%);
   }
 
   .text-stroke {

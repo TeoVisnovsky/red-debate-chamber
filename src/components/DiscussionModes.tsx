@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, MessageSquare, Users2, Vote, ListOrdered } from "lucide-react";
@@ -12,10 +12,28 @@ type DiscussionMode = "gsl" | "moderated" | "unmoderated" | "voting" | null;
 
 interface DiscussionModesProps {
   delegates: string[];
+  onModeComponentChange?: (component: React.ReactNode) => void;
+  onSetTimer?: (seconds: number, autoStart?: boolean) => void;
 }
 
-export const DiscussionModes = ({ delegates }: DiscussionModesProps) => {
+export const DiscussionModes = ({ delegates, onModeComponentChange, onSetTimer }: DiscussionModesProps) => {
   const [activeMode, setActiveMode] = useState<DiscussionMode>(null);
+
+  useEffect(() => {
+    if (onModeComponentChange) {
+      if (activeMode === "gsl") {
+        onModeComponentChange(<GeneralSpeakersList delegates={delegates} onSetTimer={onSetTimer} />);
+      } else if (activeMode === "moderated") {
+        onModeComponentChange(<ModeratedCaucus delegates={delegates} />);
+      } else if (activeMode === "unmoderated") {
+        onModeComponentChange(<UnmoderatedCaucus />);
+      } else if (activeMode === "voting") {
+        onModeComponentChange(<VotingProcedure delegates={delegates} />);
+      } else {
+        onModeComponentChange(null);
+      }
+    }
+  }, [activeMode, delegates, onModeComponentChange, onSetTimer]);
 
   const modes = [
     {
@@ -86,25 +104,25 @@ export const DiscussionModes = ({ delegates }: DiscussionModesProps) => {
                 <Button
                   onClick={() => setActiveMode(mode.id)}
                   variant={isActive ? "default" : "ghost"}
-                  className={`h-auto w-full p-4 flex items-center justify-between border-0 ${
+                  className={`h-auto w-full p-4 flex items-center justify-between gap-2 border-0 ${
                     isActive 
                       ? "bg-primary text-primary-foreground font-black" 
                       : "bg-transparent text-foreground hover:bg-muted font-bold"
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 flex items-center justify-center border-2 ${
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className={`w-10 h-10 flex-shrink-0 flex items-center justify-center border-2 ${
                       isActive ? "border-secondary bg-primary" : "border-primary bg-card"
                     }`}>
                       <Icon className="w-5 h-5" />
                     </div>
-                    <div className="text-left">
-                      <div className="text-sm tracking-wider">{mode.name.toUpperCase()}</div>
-                      <div className="text-xs opacity-70 font-normal">{mode.description}</div>
+                    <div className="text-left min-w-0 flex-1">
+                      <div className="text-sm tracking-wider truncate">{mode.name.toUpperCase()}</div>
+                      <div className="text-xs opacity-70 font-normal truncate">{mode.description}</div>
                     </div>
                   </div>
                   {isActive && (
-                    <Badge className="bg-secondary text-secondary-foreground font-black text-xs">
+                    <Badge className="bg-secondary text-secondary-foreground font-black text-xs flex-shrink-0">
                       ACTIVE
                     </Badge>
                   )}
@@ -130,11 +148,15 @@ export const DiscussionModes = ({ delegates }: DiscussionModesProps) => {
         )}
       </Card>
 
-      {/* Mode-specific Components */}
-      {activeMode === "gsl" && <GeneralSpeakersList delegates={delegates} />}
-      {activeMode === "moderated" && <ModeratedCaucus delegates={delegates} />}
-      {activeMode === "unmoderated" && <UnmoderatedCaucus />}
-      {activeMode === "voting" && <VotingProcedure delegates={delegates} />}
+      {/* Mode-specific Components - Only render here if onModeComponentChange is not provided (mobile view) */}
+      {!onModeComponentChange && (
+        <>
+          {activeMode === "gsl" && <GeneralSpeakersList delegates={delegates} onSetTimer={onSetTimer} />}
+          {activeMode === "moderated" && <ModeratedCaucus delegates={delegates} />}
+          {activeMode === "unmoderated" && <UnmoderatedCaucus />}
+          {activeMode === "voting" && <VotingProcedure delegates={delegates} />}
+        </>
+      )}
     </>
   );
 };
