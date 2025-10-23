@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { EUTimer } from "@/components/eu/EUTimer";
 import { EUDelegateManager } from "@/components/eu/EUDelegateManager";
 import { EUDiscussionModes } from "@/components/eu/EUDiscussionModes";
@@ -6,13 +6,36 @@ import { ArrowLeft, Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
-const EUCommittee = () => {
-  const navigate = useNavigate();
-  const [delegates, setDelegates] = useState<string[]>([]);
-  const [modeComponents, setModeComponents] = useState<React.ReactNode>(null);
-  const [timerSeconds, setTimerSeconds] = useState(0);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
+const STORAGE_KEY = "eu-delegates";
 
+const EUCommittee: React.FC = () => {
+  const navigate = useNavigate();
+  
+  // Initialize delegates from localStorage
+  const [delegates, setDelegates] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch (error) {
+      console.error("Failed to load delegates:", error);
+      return [];
+    }
+  });
+  
+  const [modeComponents, setModeComponents] = useState<React.ReactNode>(null);
+  const [timerSeconds, setTimerSeconds] = useState<number>(0);
+  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
+
+  // Save delegates to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(delegates));
+    } catch (error) {
+      console.error("Failed to save delegates:", error);
+    }
+  }, [delegates]);
+
+  // Memoize timer handler to prevent unnecessary re-renders
   const handleSetTimer = useCallback((seconds: number, autoStart: boolean = false) => {
     setTimerSeconds(seconds);
     setIsTimerRunning(autoStart);

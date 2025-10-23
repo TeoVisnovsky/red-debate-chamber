@@ -21,7 +21,7 @@ interface TimerProps {
   setIsRunning: (isRunning: boolean) => void;
 }
 
-export const EUTimer = ({ seconds, setSeconds, isRunning, setIsRunning }: TimerProps) => {
+export const EUTimer: React.FC<TimerProps> = ({ seconds, setSeconds, isRunning, setIsRunning }) => {
   const [inputMinutes, setInputMinutes] = useState("");
   const [showTimeUpDialog, setShowTimeUpDialog] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);

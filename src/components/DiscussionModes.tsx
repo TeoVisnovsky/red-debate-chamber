@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, MessageSquare, Users2, Vote, ListOrdered } from "lucide-react";
@@ -16,32 +16,34 @@ interface DiscussionModesProps {
   onSetTimer?: (seconds: number, autoStart?: boolean) => void;
 }
 
-export const DiscussionModes = ({ delegates, onModeComponentChange, onSetTimer }: DiscussionModesProps) => {
+export const DiscussionModes: React.FC<DiscussionModesProps> = ({ delegates, onModeComponentChange, onSetTimer }) => {
   const [activeMode, setActiveMode] = useState<DiscussionMode>(null);
+
+  // Memoize the mode component to prevent unnecessary re-renders
+  const modeComponent = useMemo(() => {
+    if (!activeMode) return null;
+    
+    switch (activeMode) {
+      case "gsl":
+        return <GeneralSpeakersList delegates={delegates} onSetTimer={onSetTimer} />;
+      case "moderated":
+        return <ModeratedCaucus delegates={delegates} />;
+      case "unmoderated":
+        return <UnmoderatedCaucus />;
+      case "voting":
+        return <VotingProcedure delegates={delegates} />;
+      default:
+        return null;
+    }
+  }, [activeMode, delegates, onSetTimer]);
 
   useEffect(() => {
     if (onModeComponentChange) {
-      if (activeMode === "gsl") {
-        onModeComponentChange(<GeneralSpeakersList delegates={delegates} onSetTimer={onSetTimer} />);
-      } else if (activeMode === "moderated") {
-        onModeComponentChange(<ModeratedCaucus delegates={delegates} />);
-      } else if (activeMode === "unmoderated") {
-        onModeComponentChange(<UnmoderatedCaucus />);
-      } else if (activeMode === "voting") {
-        onModeComponentChange(<VotingProcedure delegates={delegates} />);
-      } else {
-        onModeComponentChange(null);
-      }
+      onModeComponentChange(modeComponent);
     }
-  }, [activeMode, delegates, onModeComponentChange, onSetTimer]);
+  }, [modeComponent, onModeComponentChange]);
 
   const modes = [
-    {
-      id: "gsl" as DiscussionMode,
-      name: "General Speakers List",
-      icon: ListOrdered,
-      description: "Formal debate with speaker queue",
-    },
     {
       id: "moderated" as DiscussionMode,
       name: "Moderated Caucus",

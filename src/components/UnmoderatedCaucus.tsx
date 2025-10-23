@@ -4,10 +4,10 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Play, Pause, RotateCcw } from "lucide-react";
 
-export const UnmoderatedCaucus = () => {
-  const [time, setTime] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-  const [minutes, setMinutes] = useState("5");
+export const UnmoderatedCaucus: React.FC = () => {
+  const [time, setTime] = useState<number>(0);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [minutes, setMinutes] = useState<string>("5");
 
   useEffect(() => {
     let interval: number;

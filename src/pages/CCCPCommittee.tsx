@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Timer } from "@/components/Timer";
 import { DelegateManager } from "@/components/DelegateManager";
 import { DiscussionModes } from "@/components/DiscussionModes";
@@ -6,13 +6,36 @@ import { Star, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
-const CCCPCommittee = () => {
-  const navigate = useNavigate();
-  const [delegates, setDelegates] = useState<string[]>([]);
-  const [modeComponents, setModeComponents] = useState<React.ReactNode>(null);
-  const [timerSeconds, setTimerSeconds] = useState(0);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
+const STORAGE_KEY = "cccp-delegates";
 
+const CCCPCommittee: React.FC = () => {
+  const navigate = useNavigate();
+  
+  // Initialize delegates from localStorage
+  const [delegates, setDelegates] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch (error) {
+      console.error("Failed to load delegates:", error);
+      return [];
+    }
+  });
+  
+  const [modeComponents, setModeComponents] = useState<React.ReactNode>(null);
+  const [timerSeconds, setTimerSeconds] = useState<number>(0);
+  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
+
+  // Save delegates to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(delegates));
+    } catch (error) {
+      console.error("Failed to save delegates:", error);
+    }
+  }, [delegates]);
+
+  // Memoize timer handler to prevent unnecessary re-renders
   const handleSetTimer = useCallback((seconds: number, autoStart: boolean = false) => {
     setTimerSeconds(seconds);
     setIsTimerRunning(autoStart);
@@ -38,12 +61,12 @@ const CCCPCommittee = () => {
           <div className="flex items-center justify-center gap-3">
             <Star className="w-8 h-8 text-secondary fill-secondary" />
             <h1 className="text-4xl md:text-6xl font-bold text-primary tracking-tight">
-              CCCP MUN COMMAND
+              THE PRESIDIUM
             </h1>
             <Star className="w-8 h-8 text-secondary fill-secondary" />
           </div>
           <p className="text-xl text-secondary font-bold tracking-wide">
-            THE CENTRAL COMMITTEE OF THE COMMUNIST PARTY OF THE SOVIET UNION
+            SUPREME SOVIET OF THE UNION OF SOVIET SOCIALIST REPUBLICS
           </p>
         </div>
       </div>

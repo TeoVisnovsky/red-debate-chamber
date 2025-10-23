@@ -42,7 +42,7 @@ interface SortableItemProps {
   onTimeChange: (id: string, time: number) => void;
 }
 
-const SortableItem = ({ speaker, index, onRemove, onTimeChange }: SortableItemProps) => {
+const SortableItem: React.FC<SortableItemProps> = ({ speaker, index, onRemove, onTimeChange }) => {
   const {
     attributes,
     listeners,
@@ -101,10 +101,10 @@ const SortableItem = ({ speaker, index, onRemove, onTimeChange }: SortableItemPr
   );
 };
 
-export const EUGeneralSpeakersList = ({ delegates, onSetTimer }: GeneralSpeakersListProps) => {
+export const EUGeneralSpeakersList: React.FC<GeneralSpeakersListProps> = ({ delegates, onSetTimer }) => {
   const [speakerQueue, setSpeakerQueue] = useState<SpeakerEntry[]>([]);
-  const [selectedDelegate, setSelectedDelegate] = useState("");
-  const [defaultSpeakerTime, setDefaultSpeakerTime] = useState(60);
+  const [selectedDelegate, setSelectedDelegate] = useState<string>("");
+  const [defaultSpeakerTime, setDefaultSpeakerTime] = useState<number>(60);
 
   const sensors = useSensors(
     useSensor(PointerSensor),

@@ -1,10 +1,10 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ThumbsUp, ThumbsDown, Vote, CheckCircle, XCircle } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Minus, Vote, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface VotingProcedureProps {
@@ -16,10 +16,10 @@ interface Motion {
   title: string;
   description: string;
   status: "voting" | "passed" | "failed";
-  votes: { [delegate: string]: "favor" | "against" | null };
+  votes: Record<string, "favor" | "against" | "abstain" | null>;
 }
 
-export const EUVotingProcedure = ({ delegates }: VotingProcedureProps) => {
+export const EUVotingProcedure: React.FC<VotingProcedureProps> = ({ delegates }) => {
   const [motions, setMotions] = useState<Motion[]>([]);
   const [newMotionTitle, setNewMotionTitle] = useState("");
   const [newMotionDesc, setNewMotionDesc] = useState("");
@@ -46,7 +46,7 @@ export const EUVotingProcedure = ({ delegates }: VotingProcedureProps) => {
     });
   };
 
-  const vote = (motionId: string, delegate: string, voteType: "favor" | "against") => {
+  const vote = (motionId: string, delegate: string, voteType: "favor" | "against" | "abstain") => {
     setMotions(
       motions.map((m) =>
         m.id === motionId
@@ -72,7 +72,8 @@ export const EUVotingProcedure = ({ delegates }: VotingProcedureProps) => {
   const getVoteCounts = (motion: Motion) => {
     const favor = Object.values(motion.votes).filter((v) => v === "favor").length;
     const against = Object.values(motion.votes).filter((v) => v === "against").length;
-    return { favor, against };
+    const abstain = Object.values(motion.votes).filter((v) => v === "abstain").length;
+    return { favor, against, abstain };
   };
 
   const activeMotionData = motions.find((m) => m.id === activeMotion);
@@ -159,6 +160,17 @@ export const EUVotingProcedure = ({ delegates }: VotingProcedureProps) => {
                     >
                       <ThumbsDown className="w-4 h-4" />
                     </Button>
+                    <Button
+                      onClick={() => vote(activeMotionData.id, delegate, "abstain")}
+                      className={`h-9 px-4 rounded-lg font-semibold transition-all ${
+                        activeMotionData.votes[delegate] === "abstain"
+                          ? "bg-gray-500 text-white shadow-lg"
+                          : "bg-white/20 text-white border border-white/30 hover:bg-white/30"
+                      }`}
+                      size="sm"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -170,6 +182,9 @@ export const EUVotingProcedure = ({ delegates }: VotingProcedureProps) => {
               </Badge>
               <Badge className="bg-indigo-600 text-white font-bold px-4 py-2 rounded-lg text-base shadow-lg shadow-indigo-500/50">
                 Against: {getVoteCounts(activeMotionData).against}
+              </Badge>
+              <Badge className="bg-gray-500 text-white font-bold px-4 py-2 rounded-lg text-base shadow-lg">
+                Abstain: {getVoteCounts(activeMotionData).abstain}
               </Badge>
             </div>
 
@@ -224,6 +239,9 @@ export const EUVotingProcedure = ({ delegates }: VotingProcedureProps) => {
                         </Badge>
                         <Badge className="bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-semibold px-3 py-1 rounded-lg text-xs">
                           {counts.against} Against
+                        </Badge>
+                        <Badge className="bg-gray-500/20 text-gray-400 border border-gray-500/30 font-semibold px-3 py-1 rounded-lg text-xs">
+                          {counts.abstain} Abstain
                         </Badge>
                       </div>
                     </div>

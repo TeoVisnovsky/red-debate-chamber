@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Flag, MessageSquare, Users2, Vote, ListOrdered } from "lucide-react";
@@ -7,6 +7,7 @@ import { EUGeneralSpeakersList } from "@/components/eu/EUGeneralSpeakersList";
 import { EUModeratedCaucus } from "@/components/eu/EUModeratedCaucus";
 import { EUUnmoderatedCaucus } from "@/components/eu/EUUnmoderatedCaucus";
 import { EUVotingProcedure } from "@/components/eu/EUVotingProcedure";
+import React from "react";
 
 type DiscussionMode = "gsl" | "moderated" | "unmoderated" | "voting" | null;
 
@@ -16,24 +17,32 @@ interface DiscussionModesProps {
   onSetTimer?: (seconds: number, autoStart?: boolean) => void;
 }
 
-export const EUDiscussionModes = ({ delegates, onModeComponentChange, onSetTimer }: DiscussionModesProps) => {
+export const EUDiscussionModes: React.FC<DiscussionModesProps> = ({ delegates, onModeComponentChange, onSetTimer }) => {
   const [activeMode, setActiveMode] = useState<DiscussionMode>(null);
+
+  // Memoize the mode component to prevent unnecessary re-renders
+  const modeComponent = useMemo(() => {
+    if (!activeMode) return null;
+    
+    switch (activeMode) {
+      case "gsl":
+        return <EUGeneralSpeakersList delegates={delegates} onSetTimer={onSetTimer} />;
+      case "moderated":
+        return <EUModeratedCaucus delegates={delegates} />;
+      case "unmoderated":
+        return <EUUnmoderatedCaucus />;
+      case "voting":
+        return <EUVotingProcedure delegates={delegates} />;
+      default:
+        return null;
+    }
+  }, [activeMode, delegates, onSetTimer]);
 
   useEffect(() => {
     if (onModeComponentChange) {
-      if (activeMode === "gsl") {
-        onModeComponentChange(<EUGeneralSpeakersList delegates={delegates} onSetTimer={onSetTimer} />);
-      } else if (activeMode === "moderated") {
-        onModeComponentChange(<EUModeratedCaucus delegates={delegates} />);
-      } else if (activeMode === "unmoderated") {
-        onModeComponentChange(<EUUnmoderatedCaucus />);
-      } else if (activeMode === "voting") {
-        onModeComponentChange(<EUVotingProcedure delegates={delegates} />);
-      } else {
-        onModeComponentChange(null);
-      }
+      onModeComponentChange(modeComponent);
     }
-  }, [activeMode, delegates, onModeComponentChange, onSetTimer]);
+  }, [modeComponent, onModeComponentChange]);
 
   const modes = [
     {

@@ -1,10 +1,10 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ThumbsUp, ThumbsDown, FileText, CheckCircle, XCircle } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Minus, FileText, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface VotingProcedureProps {
@@ -16,13 +16,13 @@ interface Motion {
   title: string;
   description: string;
   status: "voting" | "passed" | "failed";
-  votes: { [delegate: string]: "favor" | "against" | null };
+  votes: Record<string, "favor" | "against" | "abstain" | null>;
 }
 
-export const VotingProcedure = ({ delegates }: VotingProcedureProps) => {
+export const VotingProcedure: React.FC<VotingProcedureProps> = ({ delegates }) => {
   const [motions, setMotions] = useState<Motion[]>([]);
-  const [newMotionTitle, setNewMotionTitle] = useState("");
-  const [newMotionDesc, setNewMotionDesc] = useState("");
+  const [newMotionTitle, setNewMotionTitle] = useState<string>("");
+  const [newMotionDesc, setNewMotionDesc] = useState<string>("");
   const [activeMotion, setActiveMotion] = useState<string | null>(null);
 
   const createMotion = () => {
@@ -46,7 +46,7 @@ export const VotingProcedure = ({ delegates }: VotingProcedureProps) => {
     });
   };
 
-  const vote = (motionId: string, delegate: string, voteType: "favor" | "against") => {
+  const vote = (motionId: string, delegate: string, voteType: "favor" | "against" | "abstain") => {
     setMotions(
       motions.map((m) =>
         m.id === motionId
@@ -72,7 +72,8 @@ export const VotingProcedure = ({ delegates }: VotingProcedureProps) => {
   const getVoteCounts = (motion: Motion) => {
     const favor = Object.values(motion.votes).filter((v) => v === "favor").length;
     const against = Object.values(motion.votes).filter((v) => v === "against").length;
-    return { favor, against };
+    const abstain = Object.values(motion.votes).filter((v) => v === "abstain").length;
+    return { favor, against, abstain };
   };
 
   const activeMotionData = motions.find((m) => m.id === activeMotion);
@@ -146,6 +147,16 @@ export const VotingProcedure = ({ delegates }: VotingProcedureProps) => {
                   >
                     <ThumbsDown className="w-4 h-4" />
                   </Button>
+                  <Button
+                    onClick={() => vote(activeMotionData.id, delegate, "abstain")}
+                    variant={
+                      activeMotionData.votes[delegate] === "abstain" ? "secondary" : "outline"
+                    }
+                    size="sm"
+                    className="h-8"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
             ))}
@@ -157,6 +168,9 @@ export const VotingProcedure = ({ delegates }: VotingProcedureProps) => {
             </Badge>
             <Badge variant="destructive">
               Against: {getVoteCounts(activeMotionData).against}
+            </Badge>
+            <Badge variant="outline">
+              Abstain: {getVoteCounts(activeMotionData).abstain}
             </Badge>
           </div>
 
@@ -203,7 +217,7 @@ export const VotingProcedure = ({ delegates }: VotingProcedureProps) => {
                       <p className="font-medium">{motion.title}</p>
                       <div className="flex gap-2 mt-1">
                         <Badge variant="outline" className="text-xs">
-                          {counts.favor} - {counts.against}
+                          For: {counts.favor} | Against: {counts.against} | Abstain: {counts.abstain}
                         </Badge>
                       </div>
                     </div>

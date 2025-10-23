@@ -12,7 +12,7 @@ interface DelegateManagerProps {
   setDelegates: (delegates: string[]) => void;
 }
 
-export const EUDelegateManager = ({ delegates, setDelegates }: DelegateManagerProps) => {
+export const EUDelegateManager: React.FC<DelegateManagerProps> = ({ delegates, setDelegates }) => {
   const [newDelegate, setNewDelegate] = useState("");
   const [isOpen, setIsOpen] = useState(true);
 

@@ -21,10 +21,10 @@ interface TimerProps {
   setIsRunning: (isRunning: boolean) => void;
 }
 
-export const Timer = ({ seconds, setSeconds, isRunning, setIsRunning }: TimerProps) => {
-  const [inputMinutes, setInputMinutes] = useState("");
-  const [showTimeUpDialog, setShowTimeUpDialog] = useState(false);
-  const [isBlinking, setIsBlinking] = useState(false);
+export const Timer: React.FC<TimerProps> = ({ seconds, setSeconds, isRunning, setIsRunning }) => {
+  const [inputMinutes, setInputMinutes] = useState<string>("");
+  const [showTimeUpDialog, setShowTimeUpDialog] = useState<boolean>(false);
+  const [isBlinking, setIsBlinking] = useState<boolean>(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const hasNotifiedRef = useRef(false);
 
@@ -94,14 +94,15 @@ export const Timer = ({ seconds, setSeconds, isRunning, setIsRunning }: TimerPro
 
   return (
     <>
-      <Card className={`bg-card border-2 border-primary p-6 transition-all ${
-        isBlinking ? 'animate-pulse border-destructive border-4' : ''
+      <Card className={`bg-card border-4 border-primary p-6 transition-all ${
+        isBlinking ? 'animate-pulse !border-destructive shadow-[0_0_30px_rgba(220,38,38,0.8)]' : ''
       }`}>
-        <div className="flex items-center gap-2 mb-4">
-          <Star className="w-5 h-5 text-secondary fill-secondary" />
-          <h2 className="text-2xl font-bold text-primary">TIMER</h2>
+        <div className="flex items-center gap-2 mb-4 border-b-2 border-secondary pb-3">
+          <Star className="w-6 h-6 text-secondary fill-secondary" />
+          <h2 className="text-2xl font-black text-primary tracking-wider uppercase">
+            ТАЙМЕР
+          </h2>
           {isBlinking && <Bell className="w-5 h-5 text-destructive animate-bounce" />}
-          <Star className="w-5 h-5 text-secondary fill-secondary" />
         </div>
         
         <div className="text-center mb-6">

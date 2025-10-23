@@ -12,9 +12,9 @@ interface DelegateManagerProps {
   setDelegates: (delegates: string[]) => void;
 }
 
-export const DelegateManager = ({ delegates, setDelegates }: DelegateManagerProps) => {
-  const [newDelegate, setNewDelegate] = useState("");
-  const [isOpen, setIsOpen] = useState(true);
+export const DelegateManager: React.FC<DelegateManagerProps> = ({ delegates, setDelegates }) => {
+  const [newDelegate, setNewDelegate] = useState<string>("");
+  const [isOpen, setIsOpen] = useState<boolean>(true);
 
   const addDelegate = () => {
     if (newDelegate.trim() && !delegates.includes(newDelegate.trim())) {
@@ -38,15 +38,14 @@ export const DelegateManager = ({ delegates, setDelegates }: DelegateManagerProp
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="bg-card border-2 border-primary p-6">
+      <Card className="bg-card border-4 border-primary p-6">
         <CollapsibleTrigger asChild>
-          <div className="flex items-center gap-2 mb-4 cursor-pointer hover:opacity-80 transition-opacity">
-            <Star className="w-5 h-5 text-secondary fill-secondary" />
-            <h2 className="text-2xl font-bold text-primary flex items-center gap-2 flex-1">
-              <Users className="w-6 h-6" />
-              DELEGATES
+          <div className="flex items-center gap-3 mb-4 cursor-pointer hover:opacity-80 transition-all border-b-2 border-secondary pb-3">
+            <Star className="w-6 h-6 text-secondary fill-secondary" />
+            <h2 className="text-2xl font-black text-primary flex items-center gap-2 flex-1 tracking-wider uppercase">
+              ТОВАРИЩИ
             </h2>
-            <Badge variant="secondary" className="text-sm">
+            <Badge className="bg-gradient-gold text-foreground font-black px-3 py-1 border-2 border-secondary text-base">
               {delegates.length}
             </Badge>
             {isOpen ? (
