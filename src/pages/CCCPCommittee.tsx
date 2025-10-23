@@ -13,9 +13,14 @@ const CCCPCommittee: React.FC = () => {
   
   // Initialize delegates from localStorage
   const [delegates, setDelegates] = useState<string[]>(() => {
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      return [];
+    }
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
+      if (!saved) return [];
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
       console.error("Failed to load delegates:", error);
       return [];
@@ -28,6 +33,9 @@ const CCCPCommittee: React.FC = () => {
 
   // Save delegates to localStorage whenever they change
   useEffect(() => {
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      return;
+    }
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(delegates));
     } catch (error) {
